@@ -1,46 +1,20 @@
-import express from "express";
-import axios from "axios";
-
+const express = require('express');
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(express.json());
 
-app.post("/transcribe", async (req, res) => {
-  const { videoUrl, apiKey } = req.body;
+app.post('/transcribe', (req, res) => {
+  const youtubeUrl = req.body.youtube_url;
 
-  if (!videoUrl || !apiKey) {
-    return res.status(400).json({ error: "Missing videoUrl or apiKey" });
+  if (!youtubeUrl) {
+    return res.status(400).json({ error: 'Missing YouTube URL' });
   }
 
-  try {
-    // Gửi POST tới AssemblyAI để transcribe
-    const response = await axios.post(
-      "https://api.assemblyai.com/v2/transcript",
-      {
-        audio_url: videoUrl,
-        auto_chapters: true,
-        format_text: true,
-        punctuate: true,
-      },
-      {
-        headers: {
-          authorization: apiKey,
-          "content-type": "application/json",
-        },
-      }
-    );
-
-    res.json({ transcript_id: response.data.id });
-  } catch (error) {
-    console.error(error?.response?.data || error.message);
-    res.status(500).json({ error: "Failed to start transcription" });
-  }
+  // Giả lập phản hồi thành công
+  return res.json({ message: `Đã nhận URL: ${youtubeUrl}` });
 });
 
-app.get("/", (req, res) => {
-  res.send("Server is up and running!");
-});
-
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server đang chạy tại cổng ${PORT}`);
 });
